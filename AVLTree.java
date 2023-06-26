@@ -186,56 +186,47 @@ public class AVLTree<T extends Comparable<T>> {
         return node;
     }
 
-    /*
-     * // Padre
-     * 
-     * public T parent(T x) throws ItemNotFound {
-     * if (isEmpty()) {
-     * throw new ItemNotFound("El árbol está vacío");
-     * }
-     * Node parentNode = getParentNode(x, root);
-     * if (parentNode == null) {
-     * throw new ItemNotFound("El elemento " + x + " no tiene padre en el árbol");
-     * }
-     * return parentNode.data;
-     * }
-     * 
-     * private Node getParentNode(T x, Node current) {
-     * if (current == null || current.data.compareTo(x) == 0) {
-     * return null;
-     * }
-     * if ((current.left != null && current.left.data.compareTo(x) == 0) ||
-     * (current.right != null && current.right.data.compareTo(x) == 0)) {
-     * return current;
-     * }
-     * if (current.data.compareTo(x) > 0) {
-     * return getParentNode(x, current.left);
-     * } else {
-     * return getParentNode(x, current.right);
-     * }
-     * }
-     * 
-     * // Hijo
-     * public T getChild(T x, boolean leftChild) throws ItemNotFound {
-     * Node parentNode = searchNode(x, root);
-     * if (parentNode == null) {
-     * throw new ItemNotFound("El elemento " + x + " no está en el árbol");
-     * }
-     * if (leftChild) {
-     * if (parentNode.left != null) {
-     * return parentNode.left.data;
-     * } else {
-     * throw new ItemNotFound("El elemento " + x + " no tiene hijo izquierdo");
-     * }
-     * } else {
-     * if (parentNode.right != null) {
-     * return parentNode.right.data;
-     * } else {
-     * throw new ItemNotFound("El elemento " + x + " no tiene hijo derecho");
-     * }
-     * }
-     * }
-     */
+    // Devuelve el padre de una palabra en el árbol AVL
+    public String parent(String word) {
+        Node parentNode = findParent(root, word);
+        if (parentNode == null) {
+            throw new NoSuchElementException("La palabra no se encuentra en el árbol o es la raíz");
+        }
+        return parentNode.data;
+    }
+
+    private Node findParent(Node node, String word) {
+        if (node == null || (node.left == null && node.right == null)) {
+            return null;
+        }
+
+        int comparison = word.compareTo(node.data);
+
+        if ((node.left != null && node.left.data.equals(word))
+                || (node.right != null && node.right.data.equals(word))) {
+            return node;
+        }
+
+        if (comparison < 0) {
+            return findParent(node.left, word);
+        } else if (comparison > 0) {
+            return findParent(node.right, word);
+        }
+
+        return null;
+    }
+
+    // Devuelve los hijos (izquierdo y derecho) de una palabra en el árbol AVL
+    public String[] son(String word) {
+        Node parentNode = findParent(root, word);
+        if (parentNode == null) {
+            throw new NoSuchElementException("La palabra no se encuentra en el árbol");
+        }
+        String leftChild = (parentNode.left != null) ? parentNode.left.data : null;
+        String rightChild = (parentNode.right != null) ? parentNode.right.data : null;
+        return new String[] { leftChild, rightChild };
+    }
+
     // Elimina una palabra del árbol AVL
     public void remove(String word) {
         root = removeRec(root, word);
