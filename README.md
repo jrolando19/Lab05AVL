@@ -866,6 +866,36 @@ public class AVLTree2 {
 
 }
 
+# Cuestionario
+
+- ¿Explique cómo es el algoritmo que implement´o para obtener el factor de equilibrio de un nodo?.
+
+El factor de equilibrio de un nodo en un árbol AVL se calcula restando la altura del subárbol derecho de la altura del subárbol izquierdo. El factor de equilibrio es un valor que indica si el árbol está balanceado o no.
+
+El algoritmo para obtener el factor de equilibrio de un nodo en un árbol AVL es el siguiente:
+
+Primero, necesitamos una función que calcule la altura de un nodo en el árbol AVL. La altura de un nodo es la longitud del camino más largo desde ese nodo hasta una hoja. Podemos implementar esta función de la siguiente manera:
+
+    private int getHeight(Node node) {
+    if (node == null) {
+    return 0;
+    }
+    return node.height;
+    }
+
+Esta función devuelve la altura de un nodo dado. Si el nodo es nulo, se considera que la altura es 0.
+
+Luego, necesitamos una función que calcule el factor de equilibrio de un nodo en el árbol AVL. El factor de equilibrio se calcula restando la altura del subárbol derecho de la altura del subárbol izquierdo. Podemos implementar esta función de la siguiente manera:
+
+    private int getBalance(Node node) {
+    if (node == null) {
+    return 0;
+    }
+    return getHeight(node.left) - getHeight(node.right);
+    }
+
+Esta función calcula y devuelve el factor de equilibrio de un nodo dado. Resta la altura del subárbol izquierdo de la altura del subárbol derecho.
+
 ## REFERENCIAS
 
     - https://www.w3schools.com/java/
