@@ -34,6 +34,15 @@ public class AVLTree<T extends Comparable<T>> {
         return node.height;
     }
 
+    // Calcula la clave (valor decimal del código ASCII) de una palabra
+    private int calculateKey(String word) {
+        int key = 0;
+        for (int i = 0; i < word.length(); i++) {
+            key += (int) word.charAt(i);
+        }
+        return key;
+    }
+
     // Calcula el factor de balance de un nodo
     private int getBalance(Node node) {
         if (node == null) {
