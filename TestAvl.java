@@ -1,45 +1,36 @@
 public class TestAvl {
 
-     public static void main(String[] args) {
-        AVLTree<String> tree = new AVLTree<String>();
+    public static void main(String[] args) {
+        AVLTree tree = new AVLTree();
 
-        // Insertar palabras en el árbol AVL
-        tree.insert("HELLO");
-        tree.insert("WORLD");
-        tree.insert("AVL");
-        tree.insert("TREE");
+        // Insertar caracteres en el árbol
+        String word = "JORDY";
+        for (char c : word.toCharArray()) {
+            tree.insert(c);
+        }
 
-        // Buscar palabras en el árbol AVL
-        System.out.println(tree.search("HELLO"));  // true
-        System.out.println(tree.search("WORLD"));  // true
-        System.out.println(tree.search("AVL"));    // true
-        System.out.println(tree.search("TREE"));   // true
-        System.out.println(tree.search("TEST"));   // false
+        // Realizar pruebas de las operaciones
+        System.out.println("Árbol AVL construido:");
+        tree.printTree();
 
-        // Obtener la palabra mínima
-        System.out.println(tree.getMin());  // "AVL"
+        char searchChar = 'J';
+        System.out.println("\nBúsqueda de '" + searchChar + "': " + tree.search(searchChar));
 
-        // Obtener la palabra máxima
-        System.out.println(tree.getMax());  // "WORLD"
+        char minChar = tree.getMin();
+        System.out.println("Mínimo elemento: " + minChar);
 
-        // Obtener el padre de una palabra
-        System.out.println(tree.parent("HELLO"));  // "TREE"
-        System.out.println(tree.parent("WORLD"));  // "TREE"
-        System.out.println(tree.parent("AVL"));    // "HELLO"
-        System.out.println(tree.parent("TREE"));   // "HELLO"
+        char maxChar = tree.getMax();
+        System.out.println("Máximo elemento: " + maxChar);
 
-        // Obtener los hijos de una palabra
-        String[] children = tree.son("HELLO");
-        System.out.println("Left Child: " + children[0]);   // "AVL"
-        System.out.println("Right Child: " + children[1]);  // "TREE"
+        char parentChar = 'O';
+        System.out.println("Padre de '" + parentChar + "': " + tree.parent(parentChar));
 
-        // Eliminar palabras del árbol AVL
-        tree.remove("HELLO");
-        tree.remove("WORLD");
+        char sonsChar = 'D';
+        System.out.println("Hijos de '" + sonsChar + "': " + tree.sons(sonsChar));
 
-        // Verificar que las palabras se hayan eliminado
-        System.out.println(tree.search("HELLO"));  // false
-        System.out.println(tree.search("WORLD"));  // false
+        char removeChar = 'Y';
+        tree.remove(removeChar);
+        System.out.println("\nÁrbol AVL después de eliminar '" + removeChar + "':");
+        tree.printTree();
     }
-}
 }
