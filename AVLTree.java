@@ -47,149 +47,81 @@ public class AVLTree<T extends Comparable<T>> {
         return this.root == null;
     }
 
-    // Insertar
-    public void insert(T x) throws ItemDuplicated {
-        this.height = false; // Por si el nodo no se inserta
-        this.root = insertRec(x, this.root);
+    // Inserta una palabra en el árbol AVL
+    public void insert(String word) {
+        root = insertRec(root, word);
     }
 
-    private Node insertRec(T x, Node current) throws ItemDuplicated {
-        Node res = current;
-        if (current == null) {
-            // En el caso base cuando hay inserción debemos consultar el cambio de altura
-            this.height = true;
-            res = new Node(x);
+    private Node insertRec(Node node, String word) {
+        if (node == null) {
+            return new Node(word);
+        }
+
+        int comparison = word.compareTo(node.data);
+        if (comparison < 0) {
+            node.left = insertRec(node.left, word);
+        } else if (comparison > 0) {
+            node.right = insertRec(node.right, word);
         } else {
-            // resC == resultado de la comparación
-            int resC = current.data.compareTo(x);
-            if (resC == 0)
-                throw new ItemDuplicated("El dato " + x + " ya fue insertado antes.");
-            if (resC < 0) {
-                res.right = insertRec(x, current.right);
-                if (this.height) { // Si existe un cambio en la altura
-                    switch (res.fb) {// Casos de fb si insertamos por la derecha
-                        // En inserción si fb pasa de -1 o 1 a 0 entonces no hay cambio de altura
-                        case -1:
-                            res.fb = 0;
-                            this.height = false;
-                            break; // Se cancela el recálculo de altura
-                        case 0:
-                            res.fb = 1;
-                            this.height = true;
-                            break; // Seguimos recalculando
-                        case 1: // res.fb = 2; debemos balancear el árbol
-                            res = balanceToLeft(res);
-                            this.height = false; // Cuando hacemos la rotación el árbol debe quedar balanceado
-                    }
-                }
-            } else {
-                res.left = insertRec(x, current.left);
-                if (this.height) { // Si existe un cambio en la altura
-                    switch (res.fb) { // Casos de fb si insertamos por la derecha
-                        // En inserción si fb pasa de -1 o 1 a 0 entonces no hay cambio de altura
-                        case 1:
-                            res.fb = 0;
-                            this.height = false;
-                            break;// Se cancela el rec�lculo de altura
-                        case 0:
-                            res.fb = -1;
-                            this.height = true;
-                            break; // Seguimos recalculando
-                        case -1: // res.fb = -2; debemos balancear el árbol
-                            res = balanceToRight(res);
-                            this.height = false; // Cuando hacemos la rotación el árbol debe quedar balanceado
-                    }
-                }
-            }
+            // La palabra ya existe en el árbol
+            return node;
         }
-        return res;
-    }
 
-    // Para balancear a la izquierda (árbol desbalanceado a la derecha)
-    private Node balanceToLeft(Node node) {
-        Node son = node.right; // Para balancear a la izquierda debemos trabajar con el hijo derecho
-        switch (son.fb) {
-            case 1: // Rotación simple (Hijo y padre tienden a la derecha)
-                // Como serán rotados el fb será 0
-                node.fb = 0;
-                son.fb = 0;
-                node = rotateSL(node);
-                break;
-            case -1: // Rotación doble (Padre desbalanceado a la derecha, hijo a la izquierda)
-                Node grandson = son.left;
-                switch (grandson.fb) { // Actualizamos los fb
-                    case -1:
-                        node.fb = 0;
-                        son.fb = -1;
-                        break;
-                    case 0:
-                        node.fb = 0;
-                        son.fb = 0;
-                        break;
-                    case 1:
-                        node.fb = 1;
-                        son.fb = 0;
-                        break;
-                }
-                grandson.fb = 0; // El nieto queda balanceado
-                // Hacemos las rotaciones
-                node.right = rotateSR(son);
-                node = rotateSL(node);
-                break;
+        node.height = 1 + Math.max(getHeight(node.left), getHeight(node.right));
+
+        int balance = getBalance(node);
+
+        // Caso de rotación izquierda-izquierda
+        if (balance > 1 && word.compareTo(node.left.data) < 0) {
+            return rotateRight(node);
         }
-        return node;
-    }
 
-    // Para balancear a la derecha (árbol desbalanceado a la izquierda)
-    private Node balanceToRight(Node node) {
-        Node son = node.left; // Para balancear a la derecha debemos trabajar con el hijo izquierdo
-        switch (son.fb) {
-            case -1: // Rotación simple (Hijo y padre tienden a la izquierda)
-                // Como serán rotados el fb será 0
-                node.fb = 0;
-                son.fb = 0;
-                node = rotateSR(node);
-                break;
-            case 1: // Rotación doble (Padre desbalanceado a la izquierda, hijo a la derecha)
-                Node grandson = son.right;
-                switch (grandson.fb) { // Actualizamos los fb
-                    case 1:
-                        node.fb = 0;
-                        son.fb = -1;
-                        break;
-                    case 0:
-                        node.fb = 0;
-                        son.fb = 0;
-                        break;
-                    case -1:
-                        node.fb = 1;
-                        son.fb = 0;
-                        break;
-
-                }
-                grandson.fb = 0; // El nieto queda balanceado
-                // Hacemos las rotaciones
-                node.left = rotateSL(son);
-                node = rotateSR(node);
-                break;
+        // Caso de rotación derecha-derecha
+        if (balance < -1 && word.compareTo(node.right.data) > 0) {
+            return rotateLeft(node);
         }
+
+        // Caso de rotación izquierda-derecha
+        if (balance > 1 && word.compareTo(node.left.data) > 0) {
+            node.left = rotateLeft(node.left);
+            return rotateRight(node);
+        }
+
+        // Caso de rotación derecha-izquierda
+        if (balance < -1 && word.compareTo(node.right.data) < 0) {
+            node.right = rotateRight(node.right);
+            return rotateLeft(node);
+        }
+
         return node;
     }
 
-    private Node rotateSL(Node node) {
-        Node son = node.right;
-        node.right = son.left;
-        son.left = node;
-        node = son;
-        return node;
+    // Realiza una rotación a la derecha sobre el nodo dado
+    private Node rotateRight(Node y) {
+        Node x = y.left;
+        Node T2 = x.right;
+
+        x.right = y;
+        y.left = T2;
+
+        y.height = 1 + Math.max(getHeight(y.left), getHeight(y.right));
+        x.height = 1 + Math.max(getHeight(x.left), getHeight(x.right));
+
+        return x;
     }
 
-    private Node rotateSR(Node node) {
-        Node son = node.left;
-        node.left = son.right;
-        son.right = node;
-        node = son;
-        return node;
+    // Realiza una rotación a la izquierda sobre el nodo dado
+    private Node rotateLeft(Node x) {
+        Node y = x.right;
+        Node T2 = y.left;
+
+        y.left = x;
+        x.right = T2;
+
+        x.height = 1 + Math.max(getHeight(x.left), getHeight(x.right));
+        y.height = 1 + Math.max(getHeight(y.left), getHeight(y.right));
+
+        return y;
     }
 
     // BÚSQUEDA PARA DEVOLVER DATOS
