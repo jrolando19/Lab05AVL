@@ -253,46 +253,72 @@ public class AVLTree<T extends Comparable<T>> {
         }
     }
 
-    // Eliminar
-    public void remove(T x) throws ItemNotFound {
-        this.root = removeRec(x, this.root);
+    // Elimina una palabra del árbol AVL
+    public void remove(String word) {
+        root = removeRec(root, word);
     }
 
-    private Node removeRec(T x, Node current) throws ItemNotFound {
-        if (current == null) {
-            throw new ItemNotFound("El dato " + x + " no se encuentra en el árbol.");
+    private Node removeRec(Node node, String word) {
+        if (node == null) {
+            return null;
         }
 
-        int comparison = x.compareTo(current.data);
+        int comparison = word.compareTo(node.data);
 
         if (comparison < 0) {
-            current.left = removeRec(x, current.left);
+            node.left = removeRec(node.left, word);
         } else if (comparison > 0) {
-            current.right = removeRec(x, current.right);
+            node.right = removeRec(node.right, word);
         } else {
             // Se encontró el nodo a eliminar
 
             // Caso 1: El nodo a eliminar es una hoja (no tiene hijos)
-            if (current.left == null && current.right == null) {
+            if (node.left == null && node.right == null) {
                 return null;
             }
             // Caso 2: El nodo a eliminar tiene un hijo derecho
-            else if (current.left == null) {
-                return current.right;
+            else if (node.left == null) {
+                return node.right;
             }
             // Caso 3: El nodo a eliminar tiene un hijo izquierdo
-            else if (current.right == null) {
-                return current.left;
+            else if (node.right == null) {
+                return node.left;
             }
             // Caso 4: El nodo a eliminar tiene dos hijos
             else {
-                Node successor = findMin(current.right);
-                current.data = successor.data;
-                current.right = removeRec(successor.data, current.right);
+                Node successor = findMin(node.right);
+                node.data = successor.data;
+                node.right = removeRec(node.right, successor.data);
             }
         }
 
-        return current;
+        node.height = 1 + Math.max(getHeight(node.left), getHeight(node.right));
+
+        int balance = getBalance(node);
+
+        // Caso de rotación izquierda-izquierda
+        if (balance > 1 && getBalance(node.left) >= 0) {
+            return rotateRight(node);
+        }
+
+        // Caso de rotación derecha-derecha
+        if (balance < -1 && getBalance(node.right) <= 0) {
+            return rotateLeft(node);
+        }
+
+        // Caso de rotación izquierda-derecha
+        if (balance > 1 && getBalance(node.left) < 0) {
+            node.left = rotateLeft(node.left);
+            return rotateRight(node);
+        }
+
+        // Caso de rotación derecha-izquierda
+        if (balance < -1 && getBalance(node.right) > 0) {
+            node.right = rotateRight(node.right);
+            return rotateLeft(node);
+        }
+
+        return node;
     }
 
     private Node findMin(Node current) {
