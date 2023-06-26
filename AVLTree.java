@@ -133,25 +133,24 @@ public class AVLTree<T extends Comparable<T>> {
         return y;
     }
 
-    // BÚSQUEDA PARA DEVOLVER DATOS
-    public T get(T x) throws ItemNotFound {
-        Node res = searchNode(x, root);
-        if (res == null)
-            throw new ItemNotFound("El dato " + x + " no está ...");
-        return res.data;
+    // Busca una palabra en el árbol AVL
+    public boolean search(String word) {
+        return searchRec(root, word);
     }
 
-    private Node searchNode(T x, Node n) {
-        if (n == null)
-            return null;
-        else {
-            int resC = n.data.compareTo(x);
-            if (resC < 0)
-                return searchNode(x, n.right);
-            else if (resC > 0)
-                return searchNode(x, n.left);
-            else
-                return n;
+    private boolean searchRec(Node node, String word) {
+        if (node == null) {
+            return false;
+        }
+
+        int comparison = word.compareTo(node.data);
+
+        if (comparison < 0) {
+            return searchRec(node.left, word);
+        } else if (comparison > 0) {
+            return searchRec(node.right, word);
+        } else {
+            return true;
         }
     }
 
