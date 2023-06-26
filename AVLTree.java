@@ -45,20 +45,20 @@ public class AVLTree {
         node.height = 1 + Math.max(getHeight(node.left), getHeight(node.right));
 
         int balance = getBalance(node);
-
+        // Caso de rotación izquierda-izquierda
         if (balance > 1 && data < node.left.data) {
             return rotateRight(node);
         }
-
+        // Caso de rotación derecha-derecha
         if (balance < -1 && data > node.right.data) {
             return rotateLeft(node);
         }
-
+        // Rotación doble
         if (balance > 1 && data > node.left.data) {
             node.left = rotateLeft(node.left);
             return rotateRight(node);
         }
-
+        // Rotación doble
         if (balance < -1 && data < node.right.data) {
             node.right = rotateRight(node.right);
             return rotateLeft(node);
@@ -200,20 +200,21 @@ public class AVLTree {
         node.height = 1 + Math.max(getHeight(node.left), getHeight(node.right));
 
         int balance = getBalance(node);
+        // Caso de rotación izquierda-izquierda
 
         if (balance > 1 && getBalance(node.left) >= 0) {
             return rotateRight(node);
         }
-
+        // Caso de rotación doble
         if (balance > 1 && getBalance(node.left) < 0) {
             node.left = rotateLeft(node.left);
             return rotateRight(node);
         }
-
+        // Caso de rotación derecha-derecha
         if (balance < -1 && getBalance(node.right) <= 0) {
             return rotateLeft(node);
         }
-
+        // Caso de rotación doble
         if (balance < -1 && getBalance(node.right) > 0) {
             node.right = rotateRight(node.right);
             return rotateLeft(node);
