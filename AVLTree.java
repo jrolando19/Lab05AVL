@@ -22,9 +22,11 @@ public class AVLTree {
         this.root = null;
     }
 
+    // MÉTODOS DEL ÁRBOL
     public void insert(char data) {
         root = insertRec(root, data);
     }
+    // Inserta una palabra en el árbol AVL
 
     private Node insertRec(Node node, char data) {
         if (node == null) {
@@ -65,6 +67,8 @@ public class AVLTree {
         return node;
     }
 
+    // Busca una palabra en el árbol AVL
+
     public boolean search(char data) {
         return searchRec(root, data);
     }
@@ -82,6 +86,7 @@ public class AVLTree {
             return searchRec(node.right, data);
         }
     }
+    // Devuelve la letra mínima en el árbol AVL
 
     public char getMin() {
         if (root == null) {
@@ -95,6 +100,7 @@ public class AVLTree {
 
         return current.data;
     }
+    // Devuelve la letra máxima en el árbol AVL
 
     public char getMax() {
         if (root == null) {
@@ -108,6 +114,8 @@ public class AVLTree {
 
         return current.data;
     }
+
+    // Devuelve el padre de una palabra en el árbol AVL
 
     public char parent(char data) {
         if (root == null) {
@@ -136,6 +144,8 @@ public class AVLTree {
         return parent != null ? parent.data : '\0';
     }
 
+    // Devuelve el hijo o hijos de una letra en el árbol AVL
+
     public String sons(char data) {
         if (root == null) {
             throw new NoSuchElementException("El árbol está vacío");
@@ -157,6 +167,8 @@ public class AVLTree {
 
         return result.toString();
     }
+
+    // Elimina una letra del árbol AVL
 
     public void remove(char data) {
         root = removeRec(root, data);
@@ -209,6 +221,7 @@ public class AVLTree {
 
         return node;
     }
+    // Realiza una rotación a la derecha sobre el nodo dado
 
     private Node rotateRight(Node node) {
         Node leftChild = node.left;
@@ -222,6 +235,7 @@ public class AVLTree {
 
         return leftChild;
     }
+    // Realiza una rotación a la izquierda sobre el nodo dado
 
     private Node rotateLeft(Node node) {
         Node rightChild = node.right;
@@ -236,12 +250,16 @@ public class AVLTree {
         return rightChild;
     }
 
+    // Calcula la altura de un nodo
+
     private int getHeight(Node node) {
         if (node == null) {
             return 0;
         }
         return node.height;
     }
+
+    // Calcula el factor de balance de un nodo
 
     private int getBalance(Node node) {
         if (node == null) {
