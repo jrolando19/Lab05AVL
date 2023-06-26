@@ -1,17 +1,15 @@
 import java.util.NoSuchElementException;
 
-public class AVLTree<T extends Comparable<T>> {
+public class AVLTree {
 
-    private class Node {
-        private String data;
-        private int key;
-        private Node left;
-        private Node right;
-        private int height;
+    class Node {
+        protected char data;
+        protected Node left;
+        protected Node right;
+        protected int height;
 
-        public Node(String data) {
+        public Node(char data) {
             this.data = data;
-            this.key = calculateKey(data);
             this.left = null;
             this.right = null;
             this.height = 1;
@@ -21,58 +19,24 @@ public class AVLTree<T extends Comparable<T>> {
     private Node root;
 
     public AVLTree() {
-        root = null;
+        this.root = null;
     }
 
-    // MÉTODOS DEL ÁRBOL
+    public void insert(char data) {
+        root = insertRec(root, data);
+    }
 
-    // Calcula la altura de un nodo
-    private int getHeight(Node node) {
+    private Node insertRec(Node node, char data) {
         if (node == null) {
-            return 0;
-        }
-        return node.height;
-    }
-
-    // Calcula la clave (valor decimal del código ASCII) de una palabra
-    private int calculateKey(String word) {
-        int key = 0;
-        for (int i = 0; i < word.length(); i++) {
-            key += (int) word.charAt(i);
-        }
-        return key;
-    }
-
-    // Calcula el factor de balance de un nodo
-    private int getBalance(Node node) {
-        if (node == null) {
-            return 0;
-        }
-        return getHeight(node.left) - getHeight(node.right);
-    }
-
-    // Para saber si el árbol está vacío
-    public boolean isEmpty() {
-        return this.root == null;
-    }
-
-    // Inserta una palabra en el árbol AVL
-    public void insert(String word) {
-        root = insertRec(root, word);
-    }
-
-    private Node insertRec(Node node, String word) {
-        if (node == null) {
-            return new Node(word);
+            return new Node(data);
         }
 
-        int comparison = word.compareTo(node.data);
-        if (comparison < 0) {
-            node.left = insertRec(node.left, word);
-        } else if (comparison > 0) {
-            node.right = insertRec(node.right, word);
+        if (data < node.data) {
+            node.left = insertRec(node.left, data);
+        } else if (data > node.data) {
+            node.right = insertRec(node.right, data);
         } else {
-            // La palabra ya existe en el árbol
+            // Duplicado, no se permiten elementos repetidos
             return node;
         }
 
@@ -80,24 +44,20 @@ public class AVLTree<T extends Comparable<T>> {
 
         int balance = getBalance(node);
 
-        // Caso de rotación izquierda-izquierda
-        if (balance > 1 && word.compareTo(node.left.data) < 0) {
+        if (balance > 1 && data < node.left.data) {
             return rotateRight(node);
         }
 
-        // Caso de rotación derecha-derecha
-        if (balance < -1 && word.compareTo(node.right.data) > 0) {
+        if (balance < -1 && data > node.right.data) {
             return rotateLeft(node);
         }
 
-        // Caso de rotación izquierda-derecha
-        if (balance > 1 && word.compareTo(node.left.data) > 0) {
+        if (balance > 1 && data > node.left.data) {
             node.left = rotateLeft(node.left);
             return rotateRight(node);
         }
 
-        // Caso de rotación derecha-izquierda
-        if (balance < -1 && word.compareTo(node.right.data) < 0) {
+        if (balance < -1 && data < node.right.data) {
             node.right = rotateRight(node.right);
             return rotateLeft(node);
         }
@@ -105,162 +65,121 @@ public class AVLTree<T extends Comparable<T>> {
         return node;
     }
 
-    // Realiza una rotación a la derecha sobre el nodo dado
-    private Node rotateRight(Node y) {
-        Node x = y.left;
-        Node T2 = x.right;
-
-        x.right = y;
-        y.left = T2;
-
-        y.height = 1 + Math.max(getHeight(y.left), getHeight(y.right));
-        x.height = 1 + Math.max(getHeight(x.left), getHeight(x.right));
-
-        return x;
+    public boolean search(char data) {
+        return searchRec(root, data);
     }
 
-    // Realiza una rotación a la izquierda sobre el nodo dado
-    private Node rotateLeft(Node x) {
-        Node y = x.right;
-        Node T2 = y.left;
-
-        y.left = x;
-        x.right = T2;
-
-        x.height = 1 + Math.max(getHeight(x.left), getHeight(x.right));
-        y.height = 1 + Math.max(getHeight(y.left), getHeight(y.right));
-
-        return y;
-    }
-
-    // Busca una palabra en el árbol AVL
-    public boolean search(String word) {
-        return searchRec(root, word);
-    }
-
-    private boolean searchRec(Node node, String word) {
+    private boolean searchRec(Node node, char data) {
         if (node == null) {
             return false;
         }
 
-        int comparison = word.compareTo(node.data);
-
-        if (comparison < 0) {
-            return searchRec(node.left, word);
-        } else if (comparison > 0) {
-            return searchRec(node.right, word);
-        } else {
+        if (data == node.data) {
             return true;
-        }
-    }
-
-    // Devuelve la palabra mínima en el árbol AVL
-    public String getMin() {
-        if (root == null) {
-            throw new NoSuchElementException("El árbol está vacío");
-        }
-        Node minNode = findMin(root);
-        return minNode.data;
-    }
-
-    private Node findMin(Node node) {
-        while (node.left != null) {
-            node = node.left;
-        }
-        return node;
-    }
-
-    // Devuelve la palabra máxima en el árbol AVL
-    public String getMax() {
-        if (root == null) {
-            throw new NoSuchElementException("El árbol está vacío");
-        }
-        Node maxNode = findMax(root);
-        return maxNode.data;
-    }
-
-    private Node findMax(Node node) {
-        while (node.right != null) {
-            node = node.right;
-        }
-        return node;
-    }
-
-    // Devuelve el padre de una palabra en el árbol AVL
-    public String parent(String word) {
-        Node parentNode = findParent(root, word);
-        if (parentNode == null) {
-            throw new NoSuchElementException("La palabra no se encuentra en el árbol o es la raíz");
-        }
-        return parentNode.data;
-    }
-
-    private Node findParent(Node node, String word) {
-        if (node == null || (node.left == null && node.right == null)) {
-            return null;
-        }
-
-        int comparison = word.compareTo(node.data);
-
-        if ((node.left != null && node.left.data.equals(word))
-                || (node.right != null && node.right.data.equals(word))) {
-            return node;
-        }
-
-        if (comparison < 0) {
-            return findParent(node.left, word);
-        } else if (comparison > 0) {
-            return findParent(node.right, word);
-        }
-
-        return null;
-    }
-
-    // Devuelve los hijos (izquierdo y derecho) de una palabra en el árbol AVL
-    public String[] son(String word) {
-        Node parentNode = findParent(root, word);
-        if (parentNode == null) {
-            throw new NoSuchElementException("La palabra no se encuentra en el árbol");
-        }
-        String leftChild = (parentNode.left != null) ? parentNode.left.data : null;
-        String rightChild = (parentNode.right != null) ? parentNode.right.data : null;
-        return new String[] { leftChild, rightChild };
-    }
-
-    // Elimina una palabra del árbol AVL
-    public void remove(String word) {
-        root = removeRec(root, word);
-    }
-
-    private Node removeRec(Node node, String word) {
-        if (node == null) {
-            return null;
-        }
-
-        int comparison = word.compareTo(node.data);
-
-        if (comparison < 0) {
-            node.left = removeRec(node.left, word);
-        } else if (comparison > 0) {
-            node.right = removeRec(node.right, word);
+        } else if (data < node.data) {
+            return searchRec(node.left, data);
         } else {
-            // Se encontró el nodo a eliminar
+            return searchRec(node.right, data);
+        }
+    }
 
-            // Caso 1: El nodo a eliminar es una hoja (no tiene hijos)
+    public char getMin() {
+        if (root == null) {
+            throw new NoSuchElementException("El árbol está vacío");
+        }
+
+        Node current = root;
+        while (current.left != null) {
+            current = current.left;
+        }
+
+        return current.data;
+    }
+
+    public char getMax() {
+        if (root == null) {
+            throw new NoSuchElementException("El árbol está vacío");
+        }
+
+        Node current = root;
+        while (current.right != null) {
+            current = current.right;
+        }
+
+        return current.data;
+    }
+
+    public char parent(char data) {
+        if (root == null) {
+            throw new NoSuchElementException("El árbol está vacío");
+        }
+
+        Node parent = null;
+        Node current = root;
+
+        while (current != null) {
+            if (data == current.data) {
+                break;
+            } else if (data < current.data) {
+                parent = current;
+                current = current.left;
+            } else {
+                parent = current;
+                current = current.right;
+            }
+        }
+
+        if (current == null) {
+            throw new NoSuchElementException("El nodo no existe en el árbol");
+        }
+
+        return parent != null ? parent.data : '\0';
+    }
+
+    public String sons(char data) {
+        if (root == null) {
+            throw new NoSuchElementException("El árbol está vacío");
+        }
+
+        Node current = searchNode(root, data);
+
+        if (current == null) {
+            throw new NoSuchElementException("El nodo no existe en el árbol");
+        }
+
+        StringBuilder result = new StringBuilder();
+        if (current.left != null) {
+            result.append(current.left.data);
+        }
+        if (current.right != null) {
+            result.append(current.right.data);
+        }
+
+        return result.toString();
+    }
+
+    public void remove(char data) {
+        root = removeRec(root, data);
+    }
+
+    private Node removeRec(Node node, char data) {
+        if (node == null) {
+            throw new NoSuchElementException("El nodo no existe en el árbol");
+        }
+
+        if (data < node.data) {
+            node.left = removeRec(node.left, data);
+        } else if (data > node.data) {
+            node.right = removeRec(node.right, data);
+        } else {
             if (node.left == null && node.right == null) {
                 return null;
-            }
-            // Caso 2: El nodo a eliminar tiene un hijo derecho
-            else if (node.left == null) {
+            } else if (node.left == null) {
                 return node.right;
-            }
-            // Caso 3: El nodo a eliminar tiene un hijo izquierdo
-            else if (node.right == null) {
+            } else if (node.right == null) {
                 return node.left;
-            }
-            // Caso 4: El nodo a eliminar tiene dos hijos
-            else {
-                Node successor = findMin(node.right);
+            } else {
+                Node successor = getMinNode(node.right);
                 node.data = successor.data;
                 node.right = removeRec(node.right, successor.data);
             }
@@ -270,23 +189,19 @@ public class AVLTree<T extends Comparable<T>> {
 
         int balance = getBalance(node);
 
-        // Caso de rotación izquierda-izquierda
         if (balance > 1 && getBalance(node.left) >= 0) {
             return rotateRight(node);
         }
 
-        // Caso de rotación derecha-derecha
-        if (balance < -1 && getBalance(node.right) <= 0) {
-            return rotateLeft(node);
-        }
-
-        // Caso de rotación izquierda-derecha
         if (balance > 1 && getBalance(node.left) < 0) {
             node.left = rotateLeft(node.left);
             return rotateRight(node);
         }
 
-        // Caso de rotación derecha-izquierda
+        if (balance < -1 && getBalance(node.right) <= 0) {
+            return rotateLeft(node);
+        }
+
         if (balance < -1 && getBalance(node.right) > 0) {
             node.right = rotateRight(node.right);
             return rotateLeft(node);
@@ -295,21 +210,78 @@ public class AVLTree<T extends Comparable<T>> {
         return node;
     }
 
-    public String toString() {
-        if (isEmpty())
-            return "Arbol Vacio...";
-        String str = inOrden(this.root);
-        return str;
+    private Node rotateRight(Node node) {
+        Node leftChild = node.left;
+        Node leftRightChild = leftChild.right;
+
+        leftChild.right = node;
+        node.left = leftRightChild;
+
+        node.height = 1 + Math.max(getHeight(node.left), getHeight(node.right));
+        leftChild.height = 1 + Math.max(getHeight(leftChild.left), getHeight(leftChild.right));
+
+        return leftChild;
     }
 
-    private String inOrden(Node current) {
-        // IRD
-        String str = "";
-        if (current.left != null)
-            str += inOrden(current.left);
-        str += current.data.toString() + "[" + current.height + "], ";
-        if (current.right != null)
-            str += inOrden(current.right);
-        return str;
+    private Node rotateLeft(Node node) {
+        Node rightChild = node.right;
+        Node rightLeftChild = rightChild.left;
+
+        rightChild.left = node;
+        node.right = rightLeftChild;
+
+        node.height = 1 + Math.max(getHeight(node.left), getHeight(node.right));
+        rightChild.height = 1 + Math.max(getHeight(rightChild.left), getHeight(rightChild.right));
+
+        return rightChild;
+    }
+
+    private int getHeight(Node node) {
+        if (node == null) {
+            return 0;
+        }
+        return node.height;
+    }
+
+    private int getBalance(Node node) {
+        if (node == null) {
+            return 0;
+        }
+        return getHeight(node.left) - getHeight(node.right);
+    }
+
+    private Node getMinNode(Node node) {
+        Node current = node;
+        while (current.left != null) {
+            current = current.left;
+        }
+        return current;
+    }
+
+    private Node searchNode(Node node, char data) {
+        if (node == null || node.data == data) {
+            return node;
+        }
+
+        if (data < node.data) {
+            return searchNode(node.left, data);
+        } else {
+            return searchNode(node.right, data);
+        }
+    }
+
+    void printTree() {
+        printTreeRec(root, 0);
+    }
+
+    private void printTreeRec(Node node, int level) {
+        if (node != null) {
+            printTreeRec(node.right, level + 1);
+            for (int i = 0; i < level; i++) {
+                System.out.print("\t");
+            }
+            System.out.println(node.data);
+            printTreeRec(node.left, level + 1);
+        }
     }
 }
