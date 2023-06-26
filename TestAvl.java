@@ -1,43 +1,45 @@
 public class TestAvl {
 
-    public static void main(String[] args) {
-        AVLTree<String> c = new AVLTree<String>();
-        AVLTree<Integer> b = new AVLTree<Integer>();
+     public static void main(String[] args) {
+        AVLTree<String> tree = new AVLTree<String>();
 
-        try {
-            b.insert(50);
-            b.insert(80);
-            b.insert(30);
-            b.insert(100);
-            b.insert(15);
-            c.insert("R");
-            c.insert("I");
-            c.insert("C");
-            c.insert("H");
-            c.insert("A");
-            c.insert("R2");
-            c.insert("T");
-            System.out.println(b);
-            System.out.println(c);
-            System.out.println("\nUSANDO LA FUNCIÓN GET");
-            System.out.println("¿Está el dato 50? " + b.get(50)); // Si aparece el número entonces está el dato
-            // Mínimo
-            System.out.println("Mínimo: " + b.getMin());
-            // Máximo
-            System.out.println("Máximo: " + b.getMax());
-            // Parent
-            System.out.println("Padre de 30: " + b.parent(30));
-            // Son
-            System.out.println("Hijo de 50:" + b.getChild(50, true));
-            System.out.println("Borrar: 100");
-            b.remove(100);
-            System.out.println(b);
-            // Cuando un elemento no está se lanza la excepción
+        // Insertar palabras en el árbol AVL
+        tree.insert("HELLO");
+        tree.insert("WORLD");
+        tree.insert("AVL");
+        tree.insert("TREE");
 
-            System.out.println("¿Está el dato 500? " + b.get(500)); // Si aparece el número entonces está el dato
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
+        // Buscar palabras en el árbol AVL
+        System.out.println(tree.search("HELLO"));  // true
+        System.out.println(tree.search("WORLD"));  // true
+        System.out.println(tree.search("AVL"));    // true
+        System.out.println(tree.search("TREE"));   // true
+        System.out.println(tree.search("TEST"));   // false
+
+        // Obtener la palabra mínima
+        System.out.println(tree.getMin());  // "AVL"
+
+        // Obtener la palabra máxima
+        System.out.println(tree.getMax());  // "WORLD"
+
+        // Obtener el padre de una palabra
+        System.out.println(tree.parent("HELLO"));  // "TREE"
+        System.out.println(tree.parent("WORLD"));  // "TREE"
+        System.out.println(tree.parent("AVL"));    // "HELLO"
+        System.out.println(tree.parent("TREE"));   // "HELLO"
+
+        // Obtener los hijos de una palabra
+        String[] children = tree.son("HELLO");
+        System.out.println("Left Child: " + children[0]);   // "AVL"
+        System.out.println("Right Child: " + children[1]);  // "TREE"
+
+        // Eliminar palabras del árbol AVL
+        tree.remove("HELLO");
+        tree.remove("WORLD");
+
+        // Verificar que las palabras se hayan eliminado
+        System.out.println(tree.search("HELLO"));  // false
+        System.out.println(tree.search("WORLD"));  // false
     }
-
+}
 }
