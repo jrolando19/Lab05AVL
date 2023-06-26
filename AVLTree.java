@@ -18,22 +18,36 @@ public class AVLTree<T extends Comparable<T>> {
         }
     }
 
-    // ATRIBUTO DE LA CLASE AVL
     private Node root;
-    private boolean height; // Si pasa a true es cambio de altura, false lo contrario
 
-    // CONSTRUCTORES
-    public void AVL() {
-        this.root = null;
+    public AVLTree() {
+        root = null;
     }
 
     // MÉTODOS DEL ÁRBOL
+
+    // Calcula la altura de un nodo
+    private int getHeight(Node node) {
+        if (node == null) {
+            return 0;
+        }
+        return node.height;
+    }
+
+    // Calcula el factor de balance de un nodo
+    private int getBalance(Node node) {
+        if (node == null) {
+            return 0;
+        }
+        return getHeight(node.left) - getHeight(node.right);
+    }
 
     // Para saber si el árbol está vacío
     public boolean isEmpty() {
         return this.root == null;
     }
 
+    // Insertar
     public void insert(T x) throws ItemDuplicated {
         this.height = false; // Por si el nodo no se inserta
         this.root = insertRec(x, this.root);
