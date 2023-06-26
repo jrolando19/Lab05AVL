@@ -154,104 +154,88 @@ public class AVLTree<T extends Comparable<T>> {
         }
     }
 
-    public String toString() {
-        if (isEmpty())
-            return "Arbol Vacio...";
-        String str = inOrden(this.root);
-        return str;
-    }
-
-    private String inOrden(Node current) {
-        // IRD
-        String str = "";
-        if (current.left != null)
-            str += inOrden(current.left);
-        str += current.data.toString() + "[" + current.fb + "], ";
-        if (current.right != null)
-            str += inOrden(current.right);
-        return str;
-    }
-
-    // Mínimo
-    public T getMin() {
-        if (isEmpty()) {
+    // Devuelve la palabra mínima en el árbol AVL
+    public String getMin() {
+        if (root == null) {
             throw new NoSuchElementException("El árbol está vacío");
         }
-        Node minNode = getMinNode(root);
+        Node minNode = findMin(root);
         return minNode.data;
     }
 
-    private Node getMinNode(Node current) {
-        if (current.left == null) {
-            return current;
+    private Node findMin(Node node) {
+        while (node.left != null) {
+            node = node.left;
         }
-        return getMinNode(current.left);
+        return node;
     }
 
-    // Máximo
-    public T getMax() {
-        if (isEmpty()) {
+    // Devuelve la palabra máxima en el árbol AVL
+    public String getMax() {
+        if (root == null) {
             throw new NoSuchElementException("El árbol está vacío");
         }
-        Node maxNode = getMaxNode(root);
+        Node maxNode = findMax(root);
         return maxNode.data;
     }
 
-    private Node getMaxNode(Node current) {
-        if (current.right == null) {
-            return current;
+    private Node findMax(Node node) {
+        while (node.right != null) {
+            node = node.right;
         }
-        return getMaxNode(current.right);
-    }
-    // Padre
-
-    public T parent(T x) throws ItemNotFound {
-        if (isEmpty()) {
-            throw new ItemNotFound("El árbol está vacío");
-        }
-        Node parentNode = getParentNode(x, root);
-        if (parentNode == null) {
-            throw new ItemNotFound("El elemento " + x + " no tiene padre en el árbol");
-        }
-        return parentNode.data;
+        return node;
     }
 
-    private Node getParentNode(T x, Node current) {
-        if (current == null || current.data.compareTo(x) == 0) {
-            return null;
-        }
-        if ((current.left != null && current.left.data.compareTo(x) == 0) ||
-                (current.right != null && current.right.data.compareTo(x) == 0)) {
-            return current;
-        }
-        if (current.data.compareTo(x) > 0) {
-            return getParentNode(x, current.left);
-        } else {
-            return getParentNode(x, current.right);
-        }
-    }
-
-    // Hijo
-    public T getChild(T x, boolean leftChild) throws ItemNotFound {
-        Node parentNode = searchNode(x, root);
-        if (parentNode == null) {
-            throw new ItemNotFound("El elemento " + x + " no está en el árbol");
-        }
-        if (leftChild) {
-            if (parentNode.left != null) {
-                return parentNode.left.data;
-            } else {
-                throw new ItemNotFound("El elemento " + x + " no tiene hijo izquierdo");
-            }
-        } else {
-            if (parentNode.right != null) {
-                return parentNode.right.data;
-            } else {
-                throw new ItemNotFound("El elemento " + x + " no tiene hijo derecho");
-            }
-        }
-    }
-
+    /*
+     * // Padre
+     * 
+     * public T parent(T x) throws ItemNotFound {
+     * if (isEmpty()) {
+     * throw new ItemNotFound("El árbol está vacío");
+     * }
+     * Node parentNode = getParentNode(x, root);
+     * if (parentNode == null) {
+     * throw new ItemNotFound("El elemento " + x + " no tiene padre en el árbol");
+     * }
+     * return parentNode.data;
+     * }
+     * 
+     * private Node getParentNode(T x, Node current) {
+     * if (current == null || current.data.compareTo(x) == 0) {
+     * return null;
+     * }
+     * if ((current.left != null && current.left.data.compareTo(x) == 0) ||
+     * (current.right != null && current.right.data.compareTo(x) == 0)) {
+     * return current;
+     * }
+     * if (current.data.compareTo(x) > 0) {
+     * return getParentNode(x, current.left);
+     * } else {
+     * return getParentNode(x, current.right);
+     * }
+     * }
+     * 
+     * // Hijo
+     * public T getChild(T x, boolean leftChild) throws ItemNotFound {
+     * Node parentNode = searchNode(x, root);
+     * if (parentNode == null) {
+     * throw new ItemNotFound("El elemento " + x + " no está en el árbol");
+     * }
+     * if (leftChild) {
+     * if (parentNode.left != null) {
+     * return parentNode.left.data;
+     * } else {
+     * throw new ItemNotFound("El elemento " + x + " no tiene hijo izquierdo");
+     * }
+     * } else {
+     * if (parentNode.right != null) {
+     * return parentNode.right.data;
+     * } else {
+     * throw new ItemNotFound("El elemento " + x + " no tiene hijo derecho");
+     * }
+     * }
+     * }
+     */
     // Elimina una palabra del árbol AVL
     public void remove(String word) {
         root = removeRec(root, word);
@@ -318,12 +302,5 @@ public class AVLTree<T extends Comparable<T>> {
         }
 
         return node;
-    }
-
-    private Node findMin(Node current) {
-        while (current.left != null) {
-            current = current.left;
-        }
-        return current;
     }
 }
